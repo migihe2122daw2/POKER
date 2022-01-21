@@ -1,0 +1,17 @@
+// CREAR CLSE DE JUGADOR PARA EL POKER, ASI SE PUEDEN CREAR Y ELIMINAR JUGADORES
+
+class jugador {
+    
+    // CONSTRUCTOR
+
+    constructor(IDjugador) {
+        this.nombre = nombre;
+        this.IDjugador = IDjugador;
+        this.saldo = saldo;
+        this.apuesta = apuesta;
+        this.cartas = cartas;
+    }
+}
+
+exports.jugador = jugador;
+

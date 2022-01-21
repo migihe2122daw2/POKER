@@ -1,0 +1,11 @@
+class Partida {
+
+    constructor (id,cartes){
+        this.id = id;
+        this.cartes = cartes;
+        this.torn = 0;
+        this.bote = '';
+    }
+}
+
+exports.Partida = Partida;

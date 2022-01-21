@@ -1,0 +1,534 @@
+/***
+ * EXPLICACION DE LA LOGICA DEL JUEGO DE POKER TAPADO
+ * 
+ * SE REPARTEN 5 CARTAS A CADA JUGADOR
+ * 
+ * TRAS EL REPARTO DE CARTAS SE REALIZA UNA RONDA DE APUESTA
+ * 
+ * ENTONCES SE PROCEDE A REALIZAR LA RONDA DE DESCARTE (NO ES NECESARIO DESCARTAR SI NO SE DESEA)
+ * 
+ * TRAS EL DESCARTE SE PROCEDE A REALIZAR OTRA RONDA DE APUESTA
+ * 
+ * MOSTRAR CARTAS Y COMPROBAR GANADOR
+ * 
+ */
+
+// FUNCION PARA INICIAR PARTIDA
+
+const { config } = require('process');
+let b = require('./baralla');
+let j = require('./clases/jugador');
+let p = require('./clases/partida');
+
+let partides = [];
+let J1 = [];
+let J2 = [];
+let J3 = [];
+
+function iniciarPartida(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+    let partida = partides.find(part => part.id == codiPartida); // p hace referencia a partida
+
+    if (partida) {
+        res.status(400).send("La partida ya ha sido iniciada");
+    } else {
+        let barallaPartida = mezclar(b.baralla);
+        let PartidaActual = new p.Partida(codiPartida, barallaPartida);
+        partides.push(PartidaActual);
+        res.status(200).send(PartidaActual);
+    }
+}
+
+// REPARTIR CARTAS
+
+function RepartirCartas(req, res) {
+
+    // Repartir 5 cartas a cada jugador y eliminar las cartas de la baraja
+
+    let codiPartida = req.params.codiPartida;
+    let jugador = req.params.jugador;
+
+    
+    if (jugador == '1') {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+console.log(partidaActual);
+
+        if (partidaActual) {
+            for (let i = 0; i < 5; i++) {
+                let carta = partidaActual.cartes.pop();
+                
+                J1.push(carta);
+            }
+            res.status(200).send(J1);
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+
+    }
+    else if (jugador == '2') {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+            for (let i = 0; i < 5; i++) {
+                let carta = partidaActual.cartes.pop();
+                J2.push(carta);
+            }
+            res.status(200).send(J2);
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+
+    }
+    else if (jugador == '3') {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+            for (let i = 0; i < 5; i++) {
+                let carta = partidaActual.cartes.pop();
+                J3.push(carta);
+            }
+            res.status(200).send(J3);
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+
+    }
+    else {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+            res.status(400).send("El jugador no existeix pero la partida si");
+        } else {
+            res.status(400).send("El jugador existeix pero la partida no");
+        }
+    }
+}
+
+// Mostrar cartes de la taula
+
+function MostrarCartes(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+    let partidaActual = partides.find(part => part.id == codiPartida);
+
+    if (partidaActual) {
+        res.status(200).send(partidaActual.cartesTaula);
+    } else {
+        res.status(400).send("La partida no existeix");
+    }
+}
+
+// Mostrar cartas dels jugadors
+
+function MostrarCartesJugador(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+    let jugador = req.params.jugador;
+
+    if (jugador == "1") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+            res.status(200).send(J1);
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+
+    }
+    else if (jugador == "2") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+            res.status(200).send(J2);
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+
+    }
+    else if (jugador == "3") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+            res.status(200).send(J3);
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+
+    }
+    else {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+            res.status(400).send("La partida no existeix");
+        } else {
+            res.status(400).send("El jugador no existeix");
+        }
+    }
+}
+
+// Primera ronda de apuesta
+
+function RondaApuesta(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+    let jugador = req.params.jugador;
+    let valorApuesta = req.params.valorApuesta;
+    
+    valorApuesta = parseInt(valorApuesta);
+
+    console.log(valorApuesta);
+
+    if (jugador == "1") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+
+            // Sumar valores y no cadenas
+
+            partidaActual.bote += valorApuesta;
+
+            
+            res.status(200).send(partidaActual.bote + "");
+        
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+    }
+    else if (jugador == "2") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+
+            
+            console.log(partidaActual.bote);
+
+            let suma= parseInt(partidaActual.bote + valorApuesta);
+
+            console.log(suma);
+            console.log(partidaActual.bote);
+
+            partidaActual.bote = suma;
+
+            console.log(partidaActual.bote);
+            res.status(200).send(partidaActual.bote + "");
+        
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+    }
+    else if (jugador == "3") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+
+            partidaActual.bote += valorApuesta;
+            res.status(200).send(partidaActual.bote + "");
+        
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+    }
+    else {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+            res.status(400).send("La partida existeix pero el jugador no");
+        } else {
+            res.status(400).send("El jugador existeix pero la partida no");
+        }
+    }
+}
+
+
+// Ronda de descartes
+
+function RondaDescartes(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+    let jugador = req.params.jugador;
+    let cartaDescartada = req.params.cartaDescartada;
+
+    if (jugador == "1") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+
+            partidaActual.cartesTaula.push(J1.cartes.find(c => c.id == cartaDescartada));
+            res.status(200).send(partidaActual.cartesTaula);
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+    }
+    else if (jugador == "2") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+
+            partidaActual.cartesTaula.push(J2.cartes.find(c => c.id == cartaDescartada));
+            res.status(200).send(partidaActual.cartesTaula);
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+    }
+    else if (jugador == "3") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+
+            partidaActual.cartesTaula.push(J3.cartes.find(c => c.id == cartaDescartada));
+            res.status(200).send(partidaActual.cartesTaula);
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+    }
+    else {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+            res.status(400).send("La partida no existeix");
+        } else {
+            res.status(400).send("El jugador no existeix");
+        }
+    }
+}
+
+// Segona ronda de apuesta
+
+function RondaApuesta2(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+    let jugador = req.params.jugador;
+    let valorApuesta = req.params.valorApuesta;
+
+    valorApuesta = parseInt(valorApuesta);
+
+    if (jugador == "1") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+
+            partidaActual.bote += valorApuesta;
+            res.status(200).send(partidaActual.bote + "");
+        
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+    }
+    else if (jugador == "2") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+
+            partidaActual.bote += valorApuesta;
+            res.status(200).send(partidaActual.bote + "");
+        
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+    }
+    else if (jugador == "3") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+
+            partidaActual.bote += valorApuesta;
+            res.status(200).send(partidaActual.bote + "");
+        
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+    }
+    else {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+            res.status(400).send("La partida no existeix");
+        } else {
+            res.status(400).send("El jugador no existeix");
+        }
+    }
+}
+
+// Mostrar cartes jugadors i de la taula, tambe mostra el bote
+
+function MostrarCartesFinal(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+    let jugador = req.params.jugador;
+
+    // Mostrar cartes de tots els jugadors
+
+    if (jugador == "tots") {
+
+        let partidaActual = partides.find(part => part.id == codiPartida);
+
+        if (partidaActual) {
+
+            res.status(200).send(partidaActual);
+        } else {
+            res.status(400).send("La partida no existeix");
+        }
+    }
+
+
+    
+
+        // Mostrar el ganador
+
+        /***
+         * COMBINACIONES DE CARTAS
+         * 
+         * 1. Escalera real
+         * 2. Escalera de color
+         * 3. Poker
+         * 4. Full
+         * 5. Color
+         * 6. Escalera
+         * 7. Trio
+         * 8. Doble pareja
+         * 9. Pareja
+         * 10. Carta Alta
+         * 
+         * GANA EL JUGADOR CON LA MAYOR COMBINACION
+         * 
+         */
+
+
+}
+
+// Terminar partida
+
+function TerminarPartida(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+
+    let partidaActual = partides.find(part => part.id == codiPartida);
+
+    if (partidaActual) {
+
+        partidaActual.estat = "terminada";
+        res.status(200).send(partidaActual);
+    } else {
+        res.status(400).send("La partida no existeix");
+    }
+}
+
+// Eliminar partida
+
+function EliminarPartida(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+
+    let partidaActual = partides.find(part => part.id == codiPartida);
+
+    if (partidaActual) {
+
+        partides = partides.filter(p => p.id != codiPartida);
+        res.status(200).send(partides);
+    } else {
+        res.status(400).send("La partida no existeix");
+    }
+}
+
+// Eliminar jugador
+
+function EliminarJugador(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+    let jugador = req.params.jugador;
+
+    let partidaActual = partides.find(part => part.id == codiPartida);
+
+    if (partidaActual) {
+
+        if (jugador == "1") {
+            partidaActual.J1 = null;
+            res.status(200).send(partidaActual);
+        }
+        else if (jugador == "2") {
+            partidaActual.J2 = null;
+            res.status(200).send(partidaActual);
+        }
+        else if (jugador == "3") {
+            partidaActual.J3 = null;
+            res.status(200).send(partidaActual);
+        }
+        else {
+            res.status(400).send("El jugador no existeix");
+        }
+    } else {
+        res.status(400).send("La partida no existeix");
+    }
+}
+
+// Mostrar bote 
+
+function MostrarBote(req, res) {
+
+    let codiPartida = req.params.codiPartida;
+
+    let partidaActual = partides.find(part => part.id == codiPartida);
+
+    if (partidaActual) {
+
+        res.status(200).send(partidaActual.bote + "");
+    
+    } else {
+        res.status(400).send("La partida no existeix");
+    }
+}
+
+
+// Funciones auxiliares
+
+function mezclar (array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function randomUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+exports.iniciarPartida = iniciarPartida;
+exports.RepartirCartas = RepartirCartas;
+exports.MostrarCartes = MostrarCartes;
+exports.MostrarCartesJugador = MostrarCartesJugador;
+exports.RondaApuesta = RondaApuesta;
+exports.RondaDescartes = RondaDescartes;
+exports.RondaApuesta2 = RondaApuesta2;
+exports.MostrarCartesFinal = MostrarCartesFinal;
+exports.TerminarPartida = TerminarPartida;
+exports.EliminarPartida = EliminarPartida;
+exports.EliminarJugador = EliminarJugador;
+exports.MostrarBote = MostrarBote;
+
+

@@ -1,2 +1,32 @@
-let server=require('./servidor_poker');
-server.iniciar();
+const express = require('express');
+const bodyParser = require('body-parser');
+const app=express();
+const con = require('./controlador');
+const { application, response, json } = require('express');
+let http = require('http');
+let url = require('url');
+
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.post('/iniciarJoc/:codiPartida', con.iniciarPartida); //iniciar la partida
+app.get('/obtenirCarta/:codiPartida/:jugador', con.RepartirCartas); //roba 1 carta de la baraja para el jugador especificado
+
+app.get('/mostrarCarta/:codiPartida', con.MostrarCartes); //muestra las 5 cartas de la mesa
+app.get('/mostrarCartes/:codiPartida/:jugador', con.MostrarCartesJugador); //muestra las cartas que posee el jugador 1 o 2
+
+app.put('/rondaApuesta/:codiPartida/:jugador/aposta/:valorApuesta', con.RondaApuesta);
+app.put('/descartarCarta/:codiPartida/carta', con.RondaDescartes);
+app.put('/rondaApuesta2/:codiPartida/:jugador/aposta/:quantitat', con.RondaApuesta2);
+
+app.get('/mostrarCartesFinal/:codiPartida', con.MostrarCartesFinal); // muestra las cartas que poseen los jugadores
+
+app.post('/acabarPartida/:codiPartida', con.TerminarPartida);
+
+app.get('/mostrarBote/:codiPartida', con.MostrarBote);
+
+app.delete('/eliminarJugador/:codiPartida/:jugador', con.EliminarJugador);
+app.delete('/eliminarPartida/:codiPartida', con.EliminarPartida);
+
+app.listen(2601, ()=>console.log('inici servidor http://localhost:2601'));

@@ -1,0 +1,48 @@
+let b=require('./baralla');
+
+const express = require('express');
+const app = express();
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static('public'));
+
+let baralla=b.baralla;
+
+app.get('/api/baralla', (req, res) => res.send(baralla));
+
+app.get('/api/baralla/:palo', (req, res) => {
+    let push = [];
+    baralla.forEach((c) => {
+        if (c.palo === req.params.palo) push.push(p);
+    });
+    if (!baralla) res.status(404, 'Error');
+    res.send(push);
+});
+
+app.get('/api/baralla/:palo/:num', (req, res) => {
+    baralla.find(a => a.palo === req.params.palo && a.num === req.params.num);
+    if (!baralla) res.status(404, 'Error');
+    res.send(baralla);
+});
+
+app.post('/api/baralla', (req, res)=>{
+    baralla={'palo': req.body.palo, 'num':parseInt(req.body.num)};
+    baralla.push(baralla);
+    res.send(baralla);
+});
+
+// Ruta para iniciar partida
+
+app.post('/api/iniciar', (req, res) => {
+
+    // Llamamos a la función iniciarPartida
+
+    let iniciarPartida = require('./iniciarPartida');
+    iniciarPartida.iniciarPartida(req.body.jugadores, req.body.apuesta);
+    res.send(iniciarPartida);
+
+});
+
+
+app.listen(2601, () => console.log('servidor iniciat'));
